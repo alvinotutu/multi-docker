@@ -1,0 +1,24 @@
+sudo: required
+language: generic
+
+services:
+  - docker
+
+before_install: 
+  - docker build -t alvinotutu/react-test -f ./client/Dockerfile.dev ./client
+
+script:
+  - docker run -e CI=true alvinotutu/react-test npm test 
+
+after_success: 
+  - docker build -t alvinotutu/multi-client ./client
+  - docker build -t alvinotutu/multi-nginx ./nginx
+  - docker build -t alvinotutu/multi-server ./server
+  - docker build -t alvinotutu/multi-worker ./worker
+# log in to dockerhub so as to push these images to dockerhub repo
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
+# Take the above listed docker images and push them to dockerhub
+  - docker push alvinotutu/multi-client
+  - docker push alvinotutu/multi-nginx
+  - docker push alvinotutu/multi-server
+  - docker push alvinotutu/multi-worker
