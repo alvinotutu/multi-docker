@@ -1,5 +1,5 @@
 version: '3'
-services: 
+services:
   postgres:
     image: 'postgres:latest'
     environment:
@@ -7,6 +7,9 @@ services:
   redis:
     image: 'redis:latest'
   nginx:
+    depends_on:
+      - api
+      - client
     restart: always
     build:
       dockerfile: Dockerfile.dev
@@ -22,7 +25,7 @@ services:
       - ./server:/app
     environment:
       - REDIS_HOST=redis
-      - REDIS_PORT=6379 
+      - REDIS_PORT=6379
       - PGUSER=postgres
       - PGHOST=postgres
       - PGDATABASE=postgres
@@ -33,7 +36,7 @@ services:
     build:
       dockerfile: Dockerfile.dev
       context: ./client
-    volumes: 
+    volumes:
       - /app/node_modules
       - ./client:/app
   worker:

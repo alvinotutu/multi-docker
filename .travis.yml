@@ -4,33 +4,33 @@ language: generic
 services:
   - docker
 
-before_install: 
-  - docker build -t alvinotutu/react-test -f ./client/Dockerfile.dev ./client
+before_install:
+  - docker build -t cygnetops/react-test -f ./client/Dockerfile.dev ./client
 
 script:
-  - docker run -e CI=true alvinotutu/react-test npm test 
+  - docker run -e CI=true cygnetops/react-test npm test
 
-after_success: 
-  - docker build -t alvinotutu/multi-client ./client
-  - docker build -t alvinotutu/multi-nginx ./nginx
-  - docker build -t alvinotutu/multi-server ./server
-  - docker build -t alvinotutu/multi-worker ./worker
-# log in to dockerhub so as to push these images to dockerhub repo
+after_success:
+  - docker build -t cygnetops/multi-client-10-14 ./client
+  - docker build -t cygnetops/multi-nginx-10-14 ./nginx
+  - docker build -t cygnetops/multi-server-10-14 ./server
+  - docker build -t cygnetops/multi-worker-10-14 ./worker
+  # Log in to the docker CLI
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_ID" --password-stdin
-# Take the above listed docker images and push them to dockerhub
-  - docker push alvinotutu/multi-client
-  - docker push alvinotutu/multi-nginx
-  - docker push alvinotutu/multi-server
-  - docker push alvinotutu/multi-worker
+  # Take those images and push them to docker hub
+  - docker push cygnetops/multi-client-10-14
+  - docker push cygnetops/multi-nginx-10-14
+  - docker push cygnetops/multi-server-10-14
+  - docker push cygnetops/multi-worker-10-14
 
 deploy:
   provider: elasticbeanstalk
-  region: "eu-west-2"
-  app: "multi-docker"
-  env: "Multidocker-env"
-  bucket_name: "elasticbeanstalk-eu-west-2-644181909982"
-  bucket_path: "docker-multi"
-  on: 
+  region: 'us-east-1'
+  app: 'multi-docker'
+  env: 'MultiDocker-env'
+  bucket_name: 'elasticbeanstalk-us-east-1-923445559289'
+  bucket_path: 'docker-multi'
+  on:
     branch: master
   access_key_id: $AWS_ACCESS_KEY
   secret_access_key: $AWS_SECRET_KEY
